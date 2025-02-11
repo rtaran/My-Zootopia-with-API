@@ -1,50 +1,23 @@
-import requests
-
-
-# API Configuration
-API_KEY = "9raNurS5dRLg5zIB0+/CjQ==YE2HPWQfCLiICTvg"  # API key
-BASE_URL = "https://api.api-ninjas.com/v1/animals"
-
-
-def fetch_animal_data(animal_name):
-    """Fetch animal data from the API."""
-    if not API_KEY:
-        print("❌ Error: API Key is missing. Set it using an environment variable.")
-        return None
-
-    headers = {"X-Api-Key": API_KEY}
-    params = {"name": animal_name}
-
-    response = requests.get(BASE_URL, headers=headers, params=params)
-
-    if response.status_code == 200:
-        data = response.json()
-        if data:
-            return data  # Return the entire list of results
-        else:
-            print(f"No results found for '{animal_name}'.")
-            return None
-    else:
-        print(f"Error {response.status_code}: {response.text}")
-        return None
-
+import data_fetcher  # Import our data fetching module
 
 # Step 1: Ask the user for an animal name
-animal_name = input("Enter a name of an animal: ").strip()
+animal_name = input("Please enter an animal: ").strip()
 
-# Step 2: Fetch data from the API
-animals = fetch_animal_data(animal_name)
+# Step 2: Fetch data using the API
+animals = data_fetcher.fetch_data(animal_name)
 
 # Step 3: Read the existing HTML template
-if animals:
-    with open("animals_template.html", "r") as file:
-        html_template = file.read()
+with open("animals_template.html", "r") as file:
+    html_template = file.read()
 
-    # Generate HTML for all returned animals
+# Step 4: Handle missing animals gracefully
+if animals and len(animals) > 0:
     animals_html = ""
     for animal in animals:
+        image_url = animal.get("image_url", "https://via.placeholder.com/300")  # Use placeholder if no image
         animal_block = f"""
         <div class="animal-card">
+            <img src="{image_url}" alt="{animal['name']}" style="width:100%; border-radius: 10px;">
             <h2>{animal['name']}</h2>
             <h3>Scientific Name: {animal['taxonomy'].get('scientific_name', 'Unknown')}</h3>
             <p><strong>Category:</strong> {animal['taxonomy'].get('kingdom', 'Unknown')} → {animal['taxonomy'].get('family', 'Unknown')}</p>
@@ -54,14 +27,21 @@ if animals:
         </div>
         """
         animals_html += animal_block
-
-    # Replace the placeholder in the template with the generated animal data
-    html_output = html_template.replace("{{ animals_content }}", animals_html)
-
-    # Write the final HTML output to a file
-    with open("animals.html", "w") as file:
-        file.write(html_output)
-
-    print("✅ Website was successfully generated to the file animals.html.")
 else:
-    print("⚠️ No data available for the entered animal.")
+    # Custom error message if no animals were found
+    animals_html = f"""
+    <div class="error-message">
+        <h2>🐾 The animal "{animal_name}" doesn't exist.</h2>
+        <p>Try searching for a different animal or check your spelling!</p>
+        <img src="https://via.placeholder.com/300?text=No+Animal+Found" alt="Not Found">
+    </div>
+    """
+
+# Step 5: Replace the placeholder in the template with the content
+html_output = html_template.replace("{{ animals_content }}", animals_html)
+
+# Step 6: Write the final HTML output to a file
+with open("animals.html", "w") as file:
+    file.write(html_output)
+
+print("✅ Website was successfully generated to the file animals.html.")
