@@ -1,69 +1,67 @@
-import json
+import requests
 
 
-def load_data(file_path):
-    """Loads animal data from a JSON file."""
-    with open(file_path, "r") as file:
-        return json.load(file)
+# API Configuration
+API_KEY = "9raNurS5dRLg5zIB0+/CjQ==YE2HPWQfCLiICTvg"  # API key
+BASE_URL = "https://api.api-ninjas.com/v1/animals"
 
 
-def generate_animal_html(animal):
-    """Generates structured HTML for each animal."""
-    html = '<li class="cards__item">\n'
-    html += f'  <div class="card__title">{animal["name"].upper()}</div>\n'
-    html += '  <div class="card__text">\n'
-    html += '    <ul>\n'
+def fetch_animal_data(animal_name):
+    """Fetch animal data from the API."""
+    if not API_KEY:
+        print("❌ Error: API Key is missing. Set it using an environment variable.")
+        return None
 
-    # Adding animal characteristics
-    if "diet" in animal["characteristics"]:
-        html += f'      <li><strong>Diet:</strong> {animal["characteristics"]["diet"]}</li>\n'
-    if "skin_type" in animal["characteristics"]:
-        html += f'      <li><strong>Skin Type:</strong> {animal["characteristics"]["skin_type"]}</li>\n'
-    if "type" in animal["characteristics"]:
-        html += f'      <li><strong>Type:</strong> {animal["characteristics"]["type"]}</li>\n'
-    if "lifespan" in animal["characteristics"]:
-        html += f'      <li><strong>Lifespan:</strong> {animal["characteristics"]["lifespan"]}</li>\n'
-    if "color" in animal["characteristics"]:
-        html += f'      <li><strong>Color:</strong> {animal["characteristics"]["color"]}</li>\n'
+    headers = {"X-Api-Key": API_KEY}
+    params = {"name": animal_name}
 
-    # Adding location(s)
-    if "locations" in animal and animal["locations"]:
-        html += f'      <li><strong>Location:</strong> {", ".join(animal["locations"])}</li>\n'
+    response = requests.get(BASE_URL, headers=headers, params=params)
 
-    # Adding scientific name
-    if "scientific_name" in animal["taxonomy"]:
-        html += f'      <li><strong>Scientific Name:</strong> {animal["taxonomy"]["scientific_name"]}</li>\n'
-
-    html += '    </ul>\n'
-    html += '  </div>\n'
-    html += '</li>\n'
-
-    return html
+    if response.status_code == 200:
+        data = response.json()
+        if data:
+            return data  # Return the entire list of results
+        else:
+            print(f"No results found for '{animal_name}'.")
+            return None
+    else:
+        print(f"Error {response.status_code}: {response.text}")
+        return None
 
 
-def main():
-    """Main function to generate the animals.html file."""
-    # Load animal data from JSON
-    animals = load_data("animals_data.json")
+# Step 1: Ask the user for an animal name
+animal_name = input("Enter a name of an animal: ").strip()
 
-    # Read the HTML template
-    with open("animals_template.html", "r") as template_file:
-        template_content = template_file.read()
+# Step 2: Fetch data from the API
+animals = fetch_animal_data(animal_name)
 
-    # Generate HTML for all animals
-    animals_html = "\n".join(generate_animal_html(animal) for animal in animals)
+# Step 3: Read the existing HTML template
+if animals:
+    with open("animals_template.html", "r") as file:
+        html_template = file.read()
 
-    # Replace placeholder in template
-    final_html = template_content.replace("__REPLACE_ANIMALS_INFO__", animals_html)
+    # Generate HTML for all returned animals
+    animals_html = ""
+    for animal in animals:
+        animal_block = f"""
+        <div class="animal-card">
+            <h2>{animal['name']}</h2>
+            <h3>Scientific Name: {animal['taxonomy'].get('scientific_name', 'Unknown')}</h3>
+            <p><strong>Category:</strong> {animal['taxonomy'].get('kingdom', 'Unknown')} → {animal['taxonomy'].get('family', 'Unknown')}</p>
+            <p><strong>Location:</strong> {', '.join(animal.get('locations', []))}</p>
+            <p><strong>Diet:</strong> {animal['characteristics'].get('diet', 'Unknown')}</p>
+            <p><strong>Habitat:</strong> {animal['characteristics'].get('habitat', 'Unknown')}</p>
+        </div>
+        """
+        animals_html += animal_block
 
-    # Write final output to animals.html
-    with open("animals.html", "w") as output_file:
-        output_file.write(final_html)
+    # Replace the placeholder in the template with the generated animal data
+    html_output = html_template.replace("{{ animals_content }}", animals_html)
 
-    print("✅ animals.html has been successfully generated!")
+    # Write the final HTML output to a file
+    with open("animals.html", "w") as file:
+        file.write(html_output)
 
-
-if __name__ == "__main__":
-    main()
-
-# bonus feuture
+    print("✅ Website was successfully generated to the file animals.html.")
+else:
+    print("⚠️ No data available for the entered animal.")
