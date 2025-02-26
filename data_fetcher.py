@@ -1,30 +1,26 @@
-import requests
 import os
-from dotenv import load_dotenv  # Load environment variables
-#
-# Load .env file
+import requests
+from dotenv import load_dotenv
+
+# Load API key from .env file
 load_dotenv()
-
-# API Configuration
 API_KEY = os.getenv("API_KEY")
-BASE_URL = "https://api.api-ninjas.com/v1/animals"
+API_URL = "https://api.api-ninjas.com/v1/animals?name="
+HEADERS = {'X-Api-Key': API_KEY}
 
-def fetch_data(animal_name):
-    """
-    Fetches animal data from API Ninja.
-    Returns a list of animals as dictionaries.
-    """
-    if not API_KEY:
-        print("❌ Error: Missing API key. Make sure to set it in the .env file.")
-        return None
 
-    headers = {"X-Api-Key": API_KEY}
-    params = {"name": animal_name}
-
-    response = requests.get(BASE_URL, headers=headers, params=params)
+def fetch_animal_data(animal_name):
+    """Fetch animal data from API Ninja's Animals API."""
+    response = requests.get(API_URL + animal_name, headers=HEADERS)
 
     if response.status_code == 200:
-        return response.json()  # Returns a list of dictionaries
-    else:
-        print(f"❌ Error {response.status_code}: {response.text}")
-        return None
+        data = response.json()
+        if data:  # Ensure response contains data
+            return data[0]  # Return first matching animal
+
+    return None  # Return None if API fails or no data found
+
+
+if __name__ == "__main__":
+    test_animal = "Fox"
+    print(fetch_animal_data(test_animal))
