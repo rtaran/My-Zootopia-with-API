@@ -3,10 +3,11 @@
 Zootopia is an interactive animal encyclopedia that dynamically fetches animal data using the **API Ninja's Animals API**. 🐾
 
 ## 🚀 Features
-- 🔍 **Live animal data** fetched from API Ninja’s Animals API.
+- 🔍 **Search for any animal** by entering its name.
 - 📜 Displays **scientific classification, habitat, diet, type, skin type, and more**.
-- 🎨 **Improved UI** with a missing CSS file now added.
+- 🎨 **Beautiful UI** with structured CSS styling.
 - 🌍 **Real-time data** from an external API instead of a static JSON file.
+- ✅ **Shows all matching animals**, not just the first result.
 
 ---
 
@@ -35,6 +36,8 @@ To generate the animal encyclopedia website, run:
 ```bash
 python animals_web_generator.py
 ```
+💡 **Enter an animal name** when prompted (e.g., `Fox`).
+
 💡 The generated website will be saved as `animals.html`.
 
 ## 🐍 Project Structure
@@ -46,8 +49,8 @@ python animals_web_generator.py
  ├── 📄 `animals.html`        # Generated website
  ├── 📄 `animals_template.html`  # HTML template
  ├── 📄 `style.css`           # 🎨 New CSS file added
- ├── 🐍 `animals_web_generator.py`  # Generates the website
- ├── 🐍 `data_fetcher.py`     # Fetches data from API
+ ├── 🐍 `animals_web_generator.py`  # Generates the website dynamically from API
+ ├── 🐍 `data_fetcher.py`     # Fetches all matching animals from API
 
 ## 🎨 Screenshots
 (Screenshots attached)

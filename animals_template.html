@@ -4,38 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zootopia Animals</title>
-    <link rel="stylesheet" href="style.css">  <!-- Keep your original CSS -->
-    <style>
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-        .animal-card {
-            width: 300px;
-            border: 2px solid #ddd;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-            background-color: white;
-            text-align: center;
-        }
-        .error-message {
-            text-align: center;
-            background-color: #ffdddd;
-            color: #a33;
-            padding: 20px;
-            border: 2px solid red;
-            margin: 20px;
-            font-size: 1.5rem;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <h1>Animal Information</h1>
-        {{ animals_content }}  <!-- This will be replaced with API data or an error message -->
+        {{ animals_content }}
     </div>
 </body>
 </html>

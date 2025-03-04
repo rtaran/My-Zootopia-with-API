@@ -28,8 +28,14 @@ def generate_animal_card(animal):
 
 def generate_webpage():
     """Generate the animals.html webpage using API data."""
-    animals = ["Fox", "Wolf", "Tiger", "Elephant"]  # Example animals
-    cards = "".join(generate_animal_card(fetch_animal_data(animal)) for animal in animals if fetch_animal_data(animal))
+    animal_name = input("Enter an animal name: ").strip()
+    animals = fetch_animal_data(animal_name)
+
+    if not animals:
+        print("No animals found.")
+        return
+
+    cards = "".join(generate_animal_card(animal) for animal in animals)
 
     with open("animals_template.html", "r") as template_file:
         template = template_file.read()

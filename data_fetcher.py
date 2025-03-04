@@ -10,17 +10,17 @@ HEADERS = {'X-Api-Key': API_KEY}
 
 
 def fetch_animal_data(animal_name):
-    """Fetch animal data from API Ninja's Animals API."""
+    """Fetch all matching animal data from API Ninja's Animals API."""
     response = requests.get(API_URL + animal_name, headers=HEADERS)
 
     if response.status_code == 200:
         data = response.json()
         if data:  # Ensure response contains data
-            return data[0]  # Return first matching animal
+            return data  # Return all matching animals
 
-    return None  # Return None if API fails or no data found
+    return []  # Return an empty list if API fails or no data found
 
 
 if __name__ == "__main__":
-    test_animal = "Fox"
+    test_animal = input("Enter an animal name: ")
     print(fetch_animal_data(test_animal))
