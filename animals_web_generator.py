@@ -33,6 +33,21 @@ def generate_webpage():
 
     if not animals:
         print("No animals found.")
+        with open("animals_template.html", "r") as template_file:
+            template = template_file.read()
+
+        message = f'''
+        <div class="animal-card error-card">
+            <h2>The animal "{animal_name}" doesn't exist.</h2>
+            <p>Please try a different animal name.</p>
+        </div>
+        '''
+        html_content = template.replace("{{ animals_content }}", message)
+
+        with open("animals.html", "w") as output_file:
+            output_file.write(html_content)
+
+        print("✅ animals.html generated with error message.")
         return
 
     cards = "".join(generate_animal_card(animal) for animal in animals)
